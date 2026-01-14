@@ -211,72 +211,67 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-black text-white font-sans selection:bg-zinc-800 selection:text-white">
       <Navbar />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
-        <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-16">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-            <p className="text-xs sm:text-sm text-zinc-500 mt-1 sm:mt-2">Manage performers and accounts</p>
-          </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={() => setShowAddModal(true)}
-              className="h-11 px-4 sm:px-6 bg-white hover:bg-zinc-200 text-black text-xs font-bold uppercase tracking-wide rounded-lg transition-all flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path>
-              </svg>
-              Add Performer
-            </button>
-          </div>
+        <header className="flex items-center justify-between gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">Admin</h1>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="h-10 px-4 sm:px-6 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Performer
+          </button>
         </header>
 
-        {/* Desktop Table View */}
-        <div className="hidden md:block space-y-6">
-          <div className="border border-zinc-900 rounded-2xl overflow-hidden bg-zinc-950/30">
-            <table className="w-full text-left border-collapse">
+        {/* Table with horizontal scroll on mobile */}
+        <div className="border border-zinc-900 rounded-xl overflow-hidden bg-zinc-950/30">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
                 <tr className="border-b border-zinc-900">
-                  <th className="px-6 py-4 text-[10px] font-bold text-zinc-600 uppercase tracking-wide">Name</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-zinc-600 uppercase tracking-wide">Email</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-zinc-600 uppercase tracking-wide">ID</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-zinc-600 uppercase tracking-wide text-center">Actions</th>
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Name</th>
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Email</th>
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">ID</th>
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-900">
                 {performers.map((p) => {
                   const linkedUser = users.find(u => u.performerId === p.id);
                   return (
-                    <tr key={p.id} className="group hover:bg-white/[0.01] transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-xs font-black text-black flex-shrink-0">
+                    <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-md bg-white flex items-center justify-center text-xs font-black text-black flex-shrink-0">
                             {p.name.charAt(0)}
                           </div>
-                          <div>
-                            <p className="text-sm font-bold text-white">{p.name}</p>
-                            <p className="text-xs text-zinc-600 font-medium mt-0.5">@{p.username}</p>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{p.name}</p>
+                            <p className="text-xs text-zinc-500 mt-0.5">@{p.username}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         {linkedUser ? (
                           <span className="text-xs text-zinc-400 font-mono break-all">{linkedUser.email}</span>
                         ) : (
-                          <span className="text-xs text-zinc-700">—</span>
+                          <span className="text-xs text-zinc-600">—</span>
                         )}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="text-xs font-mono text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800 break-all">
+                      <td className="px-4 sm:px-6 py-4">
+                        <span className="text-xs font-mono text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
                           /{p.id}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <div className="flex justify-center">
                           <button 
                             onClick={() => handleDeleteClick(p.id)}
                             disabled={isDeletingPerformer}
-                            className="text-rose-600 hover:text-rose-500 transition-all px-3 py-1.5 rounded-lg border border-rose-800/50 hover:border-rose-600 text-xs font-bold uppercase tracking-wide flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-rose-600 hover:text-rose-500 transition-all px-3 py-1.5 rounded-lg border border-rose-800/50 hover:border-rose-600 text-xs font-bold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -290,7 +285,7 @@ const AdminDashboard: React.FC = () => {
                 })}
                 {performers.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-24 text-center text-xs text-zinc-700 uppercase tracking-wide font-bold">
+                    <td colSpan={4} className="px-4 sm:px-6 py-16 text-center text-sm text-zinc-500">
                       No performers found
                     </td>
                   </tr>
@@ -299,139 +294,100 @@ const AdminDashboard: React.FC = () => {
             </table>
           </div>
         </div>
-
-        {/* Mobile Card View */}
-        <div className="md:hidden space-y-4">
-          {performers.map((p) => {
-            const linkedUser = users.find(u => u.performerId === p.id);
-            return (
-              <div key={p.id} className="border border-zinc-900 rounded-xl bg-zinc-950/30 p-4">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-md bg-white flex items-center justify-center text-sm font-black text-black flex-shrink-0">
-                    {p.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-bold text-white truncate">{p.name}</p>
-                    <p className="text-xs text-zinc-600 font-medium mt-0.5">@{p.username}</p>
-                  </div>
-                </div>
-                <div className="space-y-3 mb-4">
-                  <div>
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-wide mb-1">Email</p>
-                    {linkedUser ? (
-                      <p className="text-xs text-zinc-400 font-mono break-all">{linkedUser.email}</p>
-                    ) : (
-                      <p className="text-xs text-zinc-700">—</p>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-wide mb-1">ID</p>
-                    <p className="text-xs font-mono text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800 break-all">
-                      /{p.id}
-                    </p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => handleDeleteClick(p.id)}
-                  disabled={isDeletingPerformer}
-                  className="w-full text-rose-600 hover:text-rose-500 transition-all py-2.5 rounded-lg border border-rose-800/50 hover:border-rose-600 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
-                  Delete
-                </button>
-              </div>
-            );
-          })}
-          {performers.length === 0 && (
-            <div className="border border-zinc-900 rounded-xl bg-zinc-950/30 p-12 text-center">
-              <p className="text-xs text-zinc-700 uppercase tracking-wide font-bold">No performers found</p>
-            </div>
-          )}
-        </div>
-
-        <footer className="mt-16 sm:mt-24 text-center pb-8 sm:pb-12">
-           <div className="h-px w-12 bg-zinc-900 mx-auto mb-6 sm:mb-8"></div>
-           <p className="text-[10px] text-zinc-800 font-bold uppercase tracking-wide">Admin Dashboard</p>
-        </footer>
       </main>
 
       {/* Add Performer Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300 overflow-y-auto">
-          <div className="bg-black border border-zinc-800 w-full max-w-[800px] rounded-xl sm:rounded-2xl p-6 sm:p-10 shadow-2xl my-auto max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Create New Performer</h2>
-            <p className="text-xs text-zinc-600 font-medium mb-6 sm:mb-10">Add performer profile and login account</p>
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] flex items-start sm:items-center justify-center p-0 sm:p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowAddModal(false);
+            }
+          }}
+        >
+          <div className="bg-black border border-zinc-800 w-full sm:w-auto sm:max-w-[600px] rounded-none sm:rounded-xl shadow-2xl min-h-full sm:min-h-0 my-0 sm:my-auto">
+            <div className="sticky top-0 bg-black border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-bold text-white">Add Performer</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-zinc-500 hover:text-white transition-colors p-1"
+                disabled={isCreatingPerformer}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
             
-            <form onSubmit={handleAddPerformer} className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400">Full Name</label>
+            <form onSubmit={handleAddPerformer} className="p-4 sm:p-6 space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-2">Full Name</label>
                   <input 
                     type="text" 
                     value={newPerformer.name}
                     onChange={(e) => setNewPerformer({...newPerformer, name: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-12 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-11 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
                     placeholder="Enter full name"
                     required
                     autoFocus
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400">Username</label>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-2">Username</label>
                   <input 
                     type="text" 
                     value={newPerformer.username}
                     onChange={(e) => setNewPerformer({...newPerformer, username: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-12 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-11 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
                     placeholder="Enter username"
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400">Login URL ID</label>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-2">Login URL ID</label>
                   <input 
                     type="text" 
                     value={newPerformer.customId}
                     onChange={(e) => setNewPerformer({...newPerformer, customId: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-12 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-11 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
                     placeholder="e.g., john-smith"
                     required
                   />
-                  <p className="text-[10px] text-zinc-600">Letters, numbers, hyphens, and underscores only</p>
+                  <p className="text-[10px] text-zinc-600 mt-1">Letters, numbers, hyphens, and underscores only</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-zinc-400">Email</label>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-2">Email</label>
                   <input 
                     type="email" 
                     value={newPerformer.email}
                     onChange={(e) => setNewPerformer({...newPerformer, email: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-12 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-11 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
                     placeholder="Enter email address"
                     required
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold text-zinc-400">Password</label>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-2">Password</label>
                   <input 
                     type="password" 
                     value={newPerformer.password}
                     onChange={(e) => setNewPerformer({...newPerformer, password: e.target.value})}
-                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-12 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-black border border-zinc-800 rounded-lg px-4 h-11 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-white transition-colors"
                     placeholder="Enter password (min 6 characters)"
                     required
                     minLength={6}
                   />
-                  <p className="text-[10px] text-zinc-600">Must be at least 6 characters</p>
+                  <p className="text-[10px] text-zinc-600 mt-1">Must be at least 6 characters</p>
                 </div>
               </div>
               
-              <div className="flex flex-col gap-3 sm:gap-4 pt-4">
+              <div className="flex flex-col gap-3 pt-4 border-t border-zinc-800">
                 <button 
                   type="submit"
                   disabled={isCreatingPerformer}
-                  className="w-full h-12 bg-white hover:bg-zinc-200 text-black text-sm font-bold uppercase tracking-wide rounded-lg transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full h-11 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isCreatingPerformer ? (
                     <>
@@ -446,7 +402,7 @@ const AdminDashboard: React.FC = () => {
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   disabled={isCreatingPerformer}
-                  className="w-full h-12 bg-transparent text-zinc-500 hover:text-white text-sm font-medium transition-all disabled:opacity-50"
+                  className="w-full h-11 bg-transparent text-zinc-500 hover:text-white text-sm font-medium transition-all disabled:opacity-50 border border-zinc-800 rounded-lg"
                 >
                   Cancel
                 </button>
