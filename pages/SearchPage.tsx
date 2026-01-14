@@ -33,7 +33,9 @@ const SearchPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isAIMode, setIsAIMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -69,6 +71,27 @@ const SearchPage: React.FC = () => {
       // Fallback if top-level navigation is restricted
       window.location.href = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
     }
+  };
+
+  const handleCameraClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Redirect to Google Lens with image search
+      const reader = new FileReader();
+      reader.onload = () => {
+        // For now, redirect to Google Lens search
+        window.location.href = 'https://lens.google.com/';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const toggleAIMode = () => {
+    setIsAIMode(!isAIMode);
   };
 
   if (isRedirecting) {
@@ -133,23 +156,46 @@ const SearchPage: React.FC = () => {
               autoCorrect="off"
               spellCheck="false"
             />
-            <div className="flex items-center pl-[13px] gap-4">
-              <svg 
-                className="w-6 h-6 cursor-pointer text-[#4285F4]" 
-                fill="currentColor" 
-                viewBox="0 0 24 24"
-                aria-label="Voice Search"
+            <div className="flex items-center pl-[13px] gap-2">
+              <img 
+                src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png" 
+                className="w-6 h-6 cursor-pointer" 
+                alt="Voice Search" 
+              />
+              <button
+                type="button"
+                onClick={handleCameraClick}
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                title="Search by image"
               >
-                <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-              </svg>
-              <svg 
-                className="w-6 h-6 cursor-pointer text-[#4285F4]" 
-                fill="currentColor" 
-                viewBox="0 0 24 24"
-                aria-label="Search by image"
+                <svg className="w-6 h-6 text-[#5f6368]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                capture="environment"
+              />
+              <button
+                type="button"
+                onClick={toggleAIMode}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                  isAIMode 
+                    ? 'bg-[#1a73e8] text-white border border-[#1a73e8]' 
+                    : 'bg-[#f1f3f4] text-[#3c4043] border border-[#f1f3f4] hover:bg-[#e8eaed]'
+                }`}
+                title="AI Mode"
               >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.72-2.92 0-1.21-.49-2.19-3.61-2.85z"/>
-              </svg>
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span>AI Mode</span>
+              </button>
             </div>
           </div>
 
