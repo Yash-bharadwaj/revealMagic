@@ -192,7 +192,7 @@ const SearchPage: React.FC = () => {
                 title="AI Mode"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2zm0 16l-1.5-1.5L9 18l1.5-1.5L12 15l1.5 1.5L15 18l-1.5 1.5L12 18z"/>
                 </svg>
                 <span>AI Mode</span>
               </button>
