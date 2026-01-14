@@ -145,7 +145,7 @@ const SearchPage: React.FC = () => {
       <main className="flex-1 flex flex-col items-center pt-4 sm:pt-[120px] pb-8 px-4">
         {/* Google Logo */}
         <div className="mb-6 sm:mb-10">
-          <div className="text-[70px] sm:text-[92px] font-normal tracking-[-0.02em] google-font leading-none">
+          <div className="text-[50px] sm:text-[92px] font-normal tracking-[-0.02em] google-font leading-none">
             <span className={isDarkTheme ? 'text-white' : 'text-[#4285F4]'}>G</span>
             <span className={isDarkTheme ? 'text-white' : 'text-[#EA4335]'}>o</span>
             <span className={isDarkTheme ? 'text-white' : 'text-[#FBBC05]'}>o</span>
