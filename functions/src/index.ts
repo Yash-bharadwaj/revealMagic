@@ -170,8 +170,11 @@ export const onSearchCreated = functions.firestore
       const userData = userDoc.data();
       const fcmToken = userData.fcmToken;
 
+      console.log(`Processing search for performerId: ${performerId}, userId: ${userDoc.id}`);
+      console.log(`FCM token exists: ${!!fcmToken}`);
+
       if (!fcmToken) {
-        console.log(`No FCM token found for user: ${userDoc.id}`);
+        console.log(`No FCM token found for user: ${userDoc.id}, performerId: ${performerId}`);
         return;
       }
 
@@ -199,9 +202,19 @@ export const onSearchCreated = functions.firestore
       };
 
       // Send notification
+      console.log('Sending FCM notification...', {
+        token: fcmToken.substring(0, 20) + '...',
+        query: query,
+        performerId: performerId
+      });
       const response = await admin.messaging().send(message);
       console.log('Successfully sent notification:', response);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending FCM notification:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
     }
   });

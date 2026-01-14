@@ -126,7 +126,11 @@ const Dashboard: React.FC = () => {
           try {
             const token = await getFCMToken();
             if (token && user?.id) {
+              console.log('FCM token obtained, saving to Firestore...', token.substring(0, 20) + '...');
               await firestoreService.updateUserFCMToken(user.id, token);
+              console.log('FCM token saved successfully');
+            } else {
+              console.warn('FCM token not obtained or user ID missing', { token: token ? 'exists' : 'missing', userId: user?.id });
             }
           } catch (error) {
             console.error('Error getting FCM token:', error);

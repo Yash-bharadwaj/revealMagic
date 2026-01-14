@@ -135,6 +135,7 @@ class FirestoreService {
       });
 
       console.log(`Search submitted: ${query.trim()} for performer ${performerId} (doc ID: ${docRef.id})`);
+      console.log('This should trigger Cloud Function onSearchCreated to send push notification');
 
       // Update performer stats
       await this.updatePerformerStats(performerId);
@@ -419,6 +420,18 @@ class FirestoreService {
       await updateDoc(userRef, {
         fcmToken: fcmToken || null
       });
+      console.log(`FCM token ${fcmToken ? 'saved' : 'removed'} for user ${uid}`);
+      
+      // Verify the token was saved
+      if (fcmToken) {
+        const userDoc = await getDoc(userRef);
+        const savedToken = userDoc.data()?.fcmToken;
+        if (savedToken === fcmToken) {
+          console.log('FCM token verified in Firestore');
+        } else {
+          console.warn('FCM token mismatch after save');
+        }
+      }
     } catch (error) {
       console.error('Error updating FCM token:', error);
       throw error;
