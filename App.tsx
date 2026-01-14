@@ -1,11 +1,10 @@
 
 import React, { Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminRoute } from './components/AdminRoute';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -24,7 +23,7 @@ const App: React.FC = () => {
           </div>
         }>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/search/:performerId" element={<SearchPage />} />
             <Route 
@@ -51,7 +50,7 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               } 
             />
-            <Route path="*" element={<HomePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </Router>
