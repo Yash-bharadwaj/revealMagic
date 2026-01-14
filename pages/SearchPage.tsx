@@ -42,10 +42,13 @@ const SearchPage: React.FC = () => {
     }
 
     setIsRedirecting(true);
+    const googleUrl = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
     try {
-      window.top!.location.href = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
+      // Use replace to prevent going back to search page
+      window.top!.location.replace(googleUrl);
     } catch (err) {
-      window.location.href = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
+      // Use replace to prevent going back to search page
+      window.location.replace(googleUrl);
     }
   };
 
@@ -56,7 +59,7 @@ const SearchPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      window.location.href = 'https://lens.google.com/';
+      window.location.replace('https://lens.google.com/');
     }
   };
 
@@ -106,7 +109,7 @@ const SearchPage: React.FC = () => {
       <header className={`sm:hidden w-full flex items-center justify-between px-4 h-[48px] ${
         isDarkTheme ? 'bg-[#202124]' : 'bg-white'
       }`}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button className="p-2 cursor-pointer" aria-label="Filter">
             <svg className={`w-5 h-5 ${isDarkTheme ? 'text-white' : 'text-[#5f6368]'}`} fill="currentColor" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
               <path d="M209-120q-42 0-70.5-28.5T110-217q0-14 3-25.5t9-21.5l228-341q10-14 15-31t5-34v-110h-20q-13 0-21.5-8.5T320-810q0-13 8.5-21.5T350-840h260q13 0 21.5 8.5T640-810q0 13-8.5 21.5T610-780h-20v110q0 17 5 34t15 31l227 341q6 9 9.5 20.5T850-217q0 41-28 69t-69 28H209Zm221-660v110q0 26-7.5 50.5T401-573L276-385q-6 8-8.5 16t-2.5 16q0 23 17 39.5t42 16.5q28 0 56-12t80-47q69-45 103.5-62.5T633-443q4-1 5.5-4.5t-.5-7.5l-78-117q-15-21-22.5-46t-7.5-52v-110H430Z"/>
@@ -130,7 +133,15 @@ const SearchPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="p-2 cursor-pointer" aria-label="Google apps">
+          <button className="p-2 cursor-pointer relative" aria-label="Notifications" onClick={(e) => e.preventDefault()}>
+            <svg className={`w-5 h-5 ${isDarkTheme ? 'text-white' : 'text-[#5f6368]'}`} fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span className="absolute top-1 right-1 bg-[#EA4335] text-white text-[10px] font-medium rounded-full w-4 h-4 flex items-center justify-center leading-none">
+              4
+            </span>
+          </button>
+          <button className="p-2 cursor-pointer" aria-label="Google apps" onClick={(e) => e.preventDefault()}>
             <svg className={`w-5 h-5 ${isDarkTheme ? 'text-white' : 'text-[#5f6368]'}`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M6,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,8,6,8z M12,20c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,20,12,20z M6,20 c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,20,6,20z M6,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,14,6,14z M12,14c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S10.9,14,12,14z M18,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S16.9,14,18,14z M18,8c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S16.9,8,18,8z M12,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,8,12,8z M18,20c1.1,0,2-0.9,2-2s-0.9-2-2-2 s-2,0.9-2,2S16.9,20,18,20z"></path>
             </svg>
@@ -308,23 +319,6 @@ const SearchPage: React.FC = () => {
           </div>
         </form>
 
-        {/* Promotional Link - Mobile */}
-        <div className="sm:hidden mb-4 flex items-center justify-center gap-2">
-          <img 
-            src="/googlebag.png" 
-            alt="Google" 
-            className="w-5 h-5 flex-shrink-0"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          <a href="#" className={`hover:underline text-sm cursor-pointer ${
-            isDarkTheme ? 'text-[#8ab4f8]' : 'text-[#1a73e8]'
-          }`}>
-            Enjoy Republic Day deals on Pixel & more
-          </a>
-        </div>
-
         {/* Promotional Link - Desktop */}
         <div className="hidden sm:flex items-center justify-center gap-2 mb-6">
           <img 
@@ -454,26 +448,44 @@ const SearchPage: React.FC = () => {
           >
             Dark theme: {isDarkTheme ? 'on' : 'off'}
           </button>
-          <a href="#" className={`hover:underline cursor-pointer ${
-            isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
-          }`}>Settings</a>
-          <a href="#" className={`hover:underline cursor-pointer ${
-            isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
-          }`}>Privacy</a>
-          <a href="#" className={`hover:underline cursor-pointer ${
-            isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
-          }`}>Terms</a>
-          <a href="#" className={`hover:underline cursor-pointer ${
-            isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
-          }`}>Advertising</a>
-          <a href="#" className={`hover:underline cursor-pointer border-b ${
-            isDarkTheme 
-              ? 'text-[#bdc1c6] border-[#bdc1c6]' 
-              : 'text-[#70757a] border-[#70757a]'
-          }`}>Business</a>
-          <a href="#" className={`hover:underline cursor-pointer ${
-            isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
-          }`}>About</a>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer bg-transparent border-none p-0 ${
+              isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
+            }`}
+          >Settings</button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer bg-transparent border-none p-0 ${
+              isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
+            }`}
+          >Privacy</button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer bg-transparent border-none p-0 ${
+              isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
+            }`}
+          >Terms</button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer bg-transparent border-none p-0 ${
+              isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
+            }`}
+          >Advertising</button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer border-b bg-transparent p-0 ${
+              isDarkTheme 
+                ? 'text-[#bdc1c6] border-[#bdc1c6]' 
+                : 'text-[#70757a] border-[#70757a]'
+            }`}
+          >Business</button>
+          <button 
+            onClick={(e) => e.preventDefault()}
+            className={`hover:underline cursor-pointer bg-transparent border-none p-0 ${
+              isDarkTheme ? 'text-[#bdc1c6]' : 'text-[#70757a]'
+            }`}
+          >About</button>
         </div>
       </footer>
     </div>

@@ -3,6 +3,7 @@
   "short_name": "Googly",
   "description": "A professional tool for magicians and mentalists to secretly capture spectator search queries in real-time using a clean, deceptive search interface.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4285F4",
