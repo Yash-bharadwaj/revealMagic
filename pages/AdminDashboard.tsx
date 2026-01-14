@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { Navbar } from '../components/Navbar';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components/Toast';
 import { Performer, User } from '../types';
@@ -202,8 +201,6 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-zinc-800 selection:text-white">
-      <Navbar />
-      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
         <header className="flex items-center justify-between gap-4 mb-6">
