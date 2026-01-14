@@ -33,6 +33,7 @@ const AdminDashboard: React.FC = () => {
     message: '',
     type: 'info'
   });
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoading(false);
@@ -187,6 +188,14 @@ const AdminDashboard: React.FC = () => {
     setDeleteConfirm({ isOpen: false, performerId: null, performerName: '' });
   };
 
+  const copyLink = (performerId: string) => {
+    const link = `${window.location.origin}/#/search/${performerId}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLinkId(performerId);
+    showToast('Link copied to clipboard', 'success');
+    setTimeout(() => setCopiedLinkId(null), 2000);
+  };
+
 
   if (isLoading) {
     return (
@@ -225,6 +234,7 @@ const AdminDashboard: React.FC = () => {
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Name</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Email</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">ID</th>
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Link</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase text-center">Actions</th>
                 </tr>
               </thead>
@@ -257,6 +267,28 @@ const AdminDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 sm:px-6 py-4">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-xs text-zinc-400 font-mono truncate flex-1 min-w-0">
+                            {window.location.origin}/#/search/{p.id}
+                          </span>
+                          <button
+                            onClick={() => copyLink(p.id)}
+                            className="flex-shrink-0 text-zinc-500 hover:text-white transition-colors p-1.5 rounded hover:bg-zinc-800"
+                            title="Copy link"
+                          >
+                            {copiedLinkId === p.id ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 sm:px-6 py-4">
                         <div className="flex justify-center">
                           <button 
                             onClick={() => handleDeleteClick(p.id)}
@@ -275,7 +307,7 @@ const AdminDashboard: React.FC = () => {
                 })}
                 {performers.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-4 sm:px-6 py-16 text-center text-sm text-zinc-500">
+                    <td colSpan={5} className="px-4 sm:px-6 py-16 text-center text-sm text-zinc-500">
                       No performers found
                     </td>
                   </tr>
