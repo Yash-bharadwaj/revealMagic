@@ -1,15 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components/Toast';
 import { Performer, User } from '../types';
 import { firestoreService } from '../services/firestoreService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UserWithId extends User {
   id: string;
 }
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [performers, setPerformers] = useState<Performer[]>([]);
   const [users, setUsers] = useState<UserWithId[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -196,6 +200,16 @@ const AdminDashboard: React.FC = () => {
     setTimeout(() => setCopiedLinkId(null), 2000);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Error logging out:', error);
+      showToast('Failed to logout. Please try again.', 'error');
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -214,15 +228,26 @@ const AdminDashboard: React.FC = () => {
         {/* Header Section */}
         <header className="flex items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold">Admin</h1>
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="h-10 px-4 sm:px-6 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add Performer
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="h-10 px-4 sm:px-6 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Performer
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="h-10 px-4 sm:px-6 bg-transparent border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white text-sm font-bold rounded-lg transition-all flex items-center gap-2 whitespace-nowrap"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              Logout
+            </button>
+          </div>
         </header>
 
         {/* Table with horizontal scroll on mobile */}

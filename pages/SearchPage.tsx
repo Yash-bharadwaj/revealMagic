@@ -78,6 +78,7 @@ const SearchPage: React.FC = () => {
       </div>
     );
   }
+  
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center select-none font-sans overflow-x-hidden">
