@@ -75,7 +75,6 @@ const SearchPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center font-sans">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4]"></div>
-        <p className="mt-4 text-gray-500 font-medium">Redirecting to Google...</p>
       </div>
     );
   }
