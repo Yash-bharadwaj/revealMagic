@@ -140,22 +140,15 @@ const AdminDashboard: React.FC = () => {
       
       // If user creation failed but performer was created
       if (createdPerformer) {
-        if (errorMsg.includes('Local API server is not running')) {
-          showToast(
-            'Performer created successfully! User account creation failed. Please start the local API server or use the create-user script.',
-            'error'
-          );
-        } else {
-          showToast(
-            `Performer created successfully! User account creation failed: ${errorMsg}. Use the create-user script to create the account manually.`,
-            'error'
-          );
-        }
+        showToast(
+          'Performer created successfully! However, the user account could not be created. Please try again.',
+          'error'
+        );
         setShowAddModal(false);
         await loadUsers();
       } else {
         // Performer creation failed
-        showToast(`Failed to create performer: ${errorMsg}`, 'error');
+        showToast('Failed to create performer. Please try again.', 'error');
       }
     } finally {
       setIsCreatingPerformer(false);
@@ -183,7 +176,7 @@ const AdminDashboard: React.FC = () => {
       showToast('Performer deleted successfully!', 'success');
     } catch (error: any) {
       console.error('Error deleting performer:', error);
-      showToast(error.message || 'Failed to delete performer. Please try again.', 'error');
+      showToast('Failed to delete performer. Please try again.', 'error');
       setDeleteConfirm({ isOpen: false, performerId: null, performerName: '' });
     } finally {
       setIsDeletingPerformer(false);
@@ -421,8 +414,8 @@ const AdminDashboard: React.FC = () => {
             ? (() => {
                 const linkedUser = users.find(u => u.performerId === deleteConfirm.performerId);
                 return linkedUser
-                  ? `Are you sure you want to delete "${deleteConfirm.performerName}"?\n\nThis will delete:\n- Performer profile\n- User account (Firestore & Firebase Auth)\n- All associated data`
-                  : `Are you sure you want to delete "${deleteConfirm.performerName}"?\n\nAll their data will be lost.`;
+                  ? `Are you sure you want to delete "${deleteConfirm.performerName}"?\n\nThis will permanently delete:\n- Performer profile\n- User account\n- All associated data`
+                  : `Are you sure you want to delete "${deleteConfirm.performerName}"?\n\nAll their data will be permanently lost.`;
               })()
             : ''
         }
