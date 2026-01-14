@@ -134,13 +134,13 @@ const SearchPage: React.FC = () => {
         </div>
 
         {/* Search Bar Container */}
-        <form onSubmit={handleSearch} className="w-full max-w-[584px] relative mb-12">
+        <form onSubmit={handleSearch} className="w-full max-w-[584px] relative mb-8 sm:mb-12">
           <div 
-            className={`flex items-center w-full min-h-[44px] px-[14px] rounded-full border border-[#dfe1e5] transition-all bg-white
+            className={`flex items-center w-full min-h-[44px] sm:min-h-[44px] px-3 sm:px-[14px] rounded-full border border-[#dfe1e5] transition-all bg-white
             ${isFocused ? 'shadow-[0_1px_6px_rgba(32,33,36,0.28)] border-transparent' : 'hover:shadow-[0_1px_6px_rgba(32,33,36,0.28)] hover:border-transparent'}`}
           >
-            <div className="pr-[13px] flex items-center justify-center">
-              <svg className="w-5 h-5 text-[#9aa0a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="pr-2 sm:pr-[13px] flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#9aa0a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
@@ -151,24 +151,30 @@ const SearchPage: React.FC = () => {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              className="flex-1 focus:outline-none text-[16px] text-[#202124] h-full py-[11px] bg-transparent"
+              className="flex-1 min-w-0 focus:outline-none text-[16px] sm:text-[16px] text-[#202124] h-full py-[11px] bg-transparent"
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
             />
-            <div className="flex items-center pl-[13px] gap-2">
-              <img 
-                src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png" 
-                className="w-6 h-6 cursor-pointer" 
-                alt="Voice Search" 
-              />
+            <div className="flex items-center pl-[13px] gap-1.5 sm:gap-2 flex-shrink-0">
+              <button
+                type="button"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+                title="Voice Search"
+              >
+                <img 
+                  src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png" 
+                  className="w-5 h-5 sm:w-6 sm:h-6" 
+                  alt="Voice Search" 
+                />
+              </button>
               <button
                 type="button"
                 onClick={handleCameraClick}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
                 title="Search by image"
               >
-                <svg className="w-6 h-6 text-[#5f6368]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#5f6368]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
@@ -184,32 +190,32 @@ const SearchPage: React.FC = () => {
               <button
                 type="button"
                 onClick={toggleAIMode}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-all flex items-center gap-1 sm:gap-1.5 touch-manipulation ${
                   isAIMode 
                     ? 'bg-[#1a73e8] text-white border border-[#1a73e8]' 
-                    : 'bg-[#f1f3f4] text-[#3c4043] border border-[#f1f3f4] hover:bg-[#e8eaed]'
+                    : 'bg-[#f1f3f4] text-[#3c4043] border border-[#f1f3f4] active:bg-[#e8eaed]'
                 }`}
                 title="AI Mode"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l1.09 3.26L16 6l-2.91 1.09L12 10.18l-1.09-2.09L8 6l2.91-0.74L12 2zm0 16l-1.09-1.09L9 16l1.09 1.09L12 18.18l1.91-1.09L15 16l-1.09-1.09L12 18zm6-8l-1.09-1.09L16 8l1.09 1.09L18 10.18l1.91-1.09L21 8l-1.09-1.09L18 10zm-12 0l-1.09-1.09L4 8l1.09 1.09L6 10.18l1.91-1.09L9 8l-1.09-1.09L6 10z"/>
                 </svg>
-                <span>AI Mode</span>
+                <span className="whitespace-nowrap">AI Mode</span>
               </button>
             </div>
           </div>
 
           {/* Buttons Area */}
-          <div className="mt-[29px] flex justify-center gap-3">
+          <div className="mt-6 sm:mt-[29px] flex flex-col sm:flex-row justify-center gap-3 px-4 sm:px-0">
             <button 
               type="submit"
-              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[126px]"
+              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[140px] sm:min-w-[126px] touch-manipulation"
             >
               Google Search
             </button>
             <button 
               type="button"
-              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[126px]"
+              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[140px] sm:min-w-[126px] touch-manipulation"
             >
               I'm Feeling Lucky
             </button>
