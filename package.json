@@ -21,10 +21,12 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "canvas": "^3.2.1",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "firebase-admin": "^13.6.0",
     "typescript": "~5.8.2",
-    "vite": "^5.4.21"
+    "vite": "^5.4.21",
+    "vite-plugin-pwa": "^1.2.0"
   }
 }

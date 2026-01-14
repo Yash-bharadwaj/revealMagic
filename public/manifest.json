@@ -1,0 +1,27 @@
+{
+  "name": "Googly - Magician's Real-Time Search Tool",
+  "short_name": "Googly",
+  "description": "A professional tool for magicians and mentalists to secretly capture spectator search queries in real-time using a clean, deceptive search interface.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4285F4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "productivity"],
+  "screenshots": [],
+  "shortcuts": []
+}

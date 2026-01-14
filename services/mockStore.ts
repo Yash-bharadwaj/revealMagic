@@ -63,7 +63,7 @@ class MockStore {
     this.listeners.forEach(listener => listener(newEvent));
 
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Reveal: Search Received', {
+      new Notification('Googly : Search Received', {
         body: `"${query}"`,
         icon: 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png'
       });

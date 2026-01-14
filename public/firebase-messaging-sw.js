@@ -22,7 +22,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   
-  const notificationTitle = payload.notification?.title || 'Reveal: Search Received';
+  const notificationTitle = payload.notification?.title || 'Googly : Search Received';
   const notificationOptions = {
     body: payload.notification?.body || payload.data?.query || 'New search captured',
     icon: payload.notification?.icon || '/icon-192x192.png',

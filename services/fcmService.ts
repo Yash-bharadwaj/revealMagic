@@ -16,7 +16,7 @@ export const setupForegroundNotifications = async () => {
       
       // Show notification
       if (Notification.permission === 'granted') {
-        const notificationTitle = payload.notification?.title || 'Reveal: Search Received';
+        const notificationTitle = payload.notification?.title || 'Googly : Search Received';
         const notificationOptions = {
           body: payload.notification?.body || payload.data?.query || 'New search captured',
           icon: payload.notification?.icon || '/icon-192x192.png',
