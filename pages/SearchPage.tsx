@@ -8,30 +8,89 @@ const TRENDING_SEARCHES = [
   'makar sankranti wishes',
   'bts world tour dates',
   'flipkart iphone 17',
-  'tata punch facelift'
+  'tata punch facelift',
+  'weather forecast today',
+  'latest movie releases',
+  'cricket world cup 2025',
+  'stock market today',
+  'best restaurants near me',
+  'tech news updates'
 ];
 
 const SearchPage: React.FC = () => {
   const { performerId } = useParams<{ performerId: string }>();
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isAIMode, setIsAIMode] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-    if (window.history.pushState) {
-      window.history.pushState(null, "", window.location.href);
+    // Replace current history entry instead of adding new one
+    if (window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.href);
     }
-  }, []);
+
+    // Check lock status
+    if (performerId) {
+      firestoreService.getLockStatus(performerId).then((locked) => {
+        setIsLocked(locked);
+      }).catch((error) => {
+        console.error('Error checking lock status:', error);
+      });
+    }
+
+    // Prevent overscroll bounce on mobile
+    const preventOverscroll = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      // Allow scrolling in scrollable containers
+      if (target.closest('.overflow-y-auto, [style*="overflow"]')) {
+        return;
+      }
+      
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      
+      // Prevent bounce at top
+      if (scrollTop <= 0 && e.touches[0].pageY > (e as any).initialTouchY) {
+        e.preventDefault();
+        return false;
+      }
+      
+      // Prevent bounce at bottom
+      if (scrollTop + clientHeight >= scrollHeight - 1 && e.touches[0].pageY < (e as any).initialTouchY) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      (e as any).initialTouchY = e.touches[0].pageY;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', preventOverscroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', preventOverscroll);
+    };
+  }, [performerId]);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
+
+    // Check if link is locked
+    if (isLocked) {
+      alert('This search link is currently locked. Please contact the performer.');
+      return;
+    }
 
     if (performerId) {
       try {
@@ -41,7 +100,6 @@ const SearchPage: React.FC = () => {
       }
     }
 
-    setIsRedirecting(true);
     const googleUrl = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
     try {
       // Use replace to prevent going back to search page
@@ -71,20 +129,36 @@ const SearchPage: React.FC = () => {
     setIsDarkTheme(!isDarkTheme);
   };
 
-  if (isRedirecting) {
-    return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4285F4]"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`min-h-screen flex flex-col font-sans overflow-x-hidden ${
-      isDarkTheme 
-        ? 'bg-[#202124] sm:bg-[#202124]' 
-        : 'bg-white sm:bg-white'
-    }`}>
+    <>
+      <style>{`
+        @keyframes themeFade {
+          0% {
+            opacity: 0.8;
+          }
+          50% {
+            opacity: 0.9;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        .theme-transition {
+          animation: themeFade 0.6s ease-in-out;
+        }
+      `}</style>
+      <div 
+        className={`min-h-screen flex flex-col font-sans overflow-x-hidden transition-colors duration-500 ease-in-out theme-transition ${
+          isDarkTheme 
+            ? 'bg-[#202124] sm:bg-[#202124]' 
+            : 'bg-white sm:bg-white'
+        }`}
+        style={{
+          overscrollBehavior: 'none',
+          overscrollBehaviorY: 'none',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
       {/* Header - Desktop */}
       <header className="hidden sm:flex w-full items-center justify-between px-4 sm:px-6 h-[60px]">
         <div className="flex items-center gap-6 text-[13px] text-[#202124]">
@@ -106,7 +180,7 @@ const SearchPage: React.FC = () => {
       </header>
 
       {/* Header - Mobile */}
-      <header className={`sm:hidden w-full flex items-center justify-between px-4 h-[48px] ${
+      <header className={`sm:hidden w-full flex items-center justify-between px-4 h-[48px] transition-colors duration-500 ease-in-out ${
         isDarkTheme ? 'bg-[#202124]' : 'bg-white'
       }`}>
         <div className="flex items-center gap-2">
@@ -153,23 +227,32 @@ const SearchPage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center pt-4 sm:pt-[120px] pb-8 px-4">
+      <main className="flex-1 flex flex-col items-center pt-12 sm:pt-[120px] pb-8 px-4">
+        {/* Locked Message */}
+        {isLocked && (
+          <div className="mb-4 w-full max-w-[584px] bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top duration-300">
+            <svg className="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <p className="text-sm text-yellow-800">This search link is currently locked and cannot accept searches.</p>
+          </div>
+        )}
         {/* Google Logo */}
         <div className="mb-6 sm:mb-10">
           <div className="text-[50px] sm:text-[92px] font-normal tracking-[-0.02em] google-font leading-none">
-            <span className={isDarkTheme ? 'text-white' : 'text-[#4285F4]'}>G</span>
-            <span className={isDarkTheme ? 'text-white' : 'text-[#EA4335]'}>o</span>
-            <span className={isDarkTheme ? 'text-white' : 'text-[#FBBC05]'}>o</span>
-            <span className={isDarkTheme ? 'text-white' : 'text-[#4285F4]'}>g</span>
-            <span className={isDarkTheme ? 'text-white' : 'text-[#34A853]'}>l</span>
-            <span className={isDarkTheme ? 'text-white' : 'text-[#EA4335]'}>e</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#4285F4]'}`}>G</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#EA4335]'}`}>o</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#FBBC05]'}`}>o</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#4285F4]'}`}>g</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#34A853]'}`}>l</span>
+            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#EA4335]'}`}>e</span>
           </div>
         </div>
 
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="w-full max-w-[584px] mb-6 sm:mb-8">
           <div 
-            className={`flex items-center w-full h-[44px] sm:h-[46px] px-4 sm:px-5 rounded-full border transition-all ${
+            className={`flex items-center w-full h-[44px] sm:h-[46px] px-4 sm:px-5 rounded-full border transition-all duration-500 ease-in-out ${
               isDarkTheme 
                 ? 'bg-[#303134] sm:bg-[#303134]' 
                 : 'bg-white sm:bg-white'
@@ -204,14 +287,24 @@ const SearchPage: React.FC = () => {
             {/* Input */}
             <input 
               ref={inputRef}
-              type="text" 
+              type="search" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setIsFocused(true)}
+              onFocus={(e) => {
+                setIsFocused(true);
+                // Scroll input into view on mobile when keyboard appears
+                if (window.innerWidth < 640) {
+                  setTimeout(() => {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 300);
+                }
+              }}
               onBlur={() => setIsFocused(false)}
-              className={`flex-1 min-w-0 focus:outline-none text-[16px] h-full bg-transparent placeholder:text-[#9aa0a6] ${
+              disabled={isLocked}
+              enterKeyHint="search"
+              className={`flex-1 min-w-0 focus:outline-none text-[16px] h-full bg-transparent placeholder:text-[#9aa0a6] transition-colors duration-500 ease-in-out ${
                 isDarkTheme ? 'text-white' : 'text-[#202124]'
-              }`}
+              } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
@@ -306,7 +399,10 @@ const SearchPage: React.FC = () => {
           <div className="hidden sm:flex mt-7 flex-row justify-center gap-3">
             <button 
               type="submit"
-              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] cursor-pointer"
+              disabled={isLocked}
+              className={`px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] ${
+                isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              }`}
             >
               Google Search
             </button>
@@ -384,7 +480,7 @@ const SearchPage: React.FC = () => {
             <h2 className={`text-base font-medium ${
               isDarkTheme ? 'text-white' : 'text-[#202124]'
             }`}>Trending searches</h2>
-            <button className="p-1 cursor-pointer">
+            <button className="p-1 cursor-pointer" onClick={(e) => e.preventDefault()}>
               <svg className={`w-5 h-5 ${
                 isDarkTheme ? 'text-[#9aa0a6]' : 'text-[#5f6368]'
               }`} fill="currentColor" viewBox="0 0 24 24">
@@ -392,40 +488,77 @@ const SearchPage: React.FC = () => {
               </svg>
             </button>
           </div>
-          <div className="w-full">
-            {TRENDING_SEARCHES.map((search, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setQuery(search);
-                  handleSearch();
-                }}
-                className={`w-full flex items-center gap-3 px-2 py-3 text-left transition-colors cursor-pointer ${
-                  isDarkTheme
-                    ? 'hover:bg-[#303134]'
-                    : 'hover:bg-gray-50'
-                } ${
-                  index < TRENDING_SEARCHES.length - 1 
-                    ? `border-b ${isDarkTheme ? 'border-[#3c4043]' : 'border-[#e8eaed]'}`
-                    : ''
-                }`}
-              >
-                <svg className={`w-4 h-4 flex-shrink-0 ${
-                  isDarkTheme ? 'text-[#9aa0a6]' : 'text-[#5f6368]'
-                }`} fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-                </svg>
-                <span className={`text-sm ${
-                  isDarkTheme ? 'text-white' : 'text-[#202124]'
-                }`}>{search}</span>
-              </button>
-            ))}
+          <div 
+            className="w-full overflow-y-auto"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: isDarkTheme ? '#5f6368 transparent' : '#dadce0 transparent',
+              maxHeight: '180px'
+            }}
+          >
+            <style>{`
+              @keyframes fadeInUp {
+                from {
+                  opacity: 0;
+                  transform: translateY(10px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+              .trending-scroll::-webkit-scrollbar {
+                width: 6px;
+              }
+              .trending-scroll::-webkit-scrollbar-track {
+                background: transparent;
+              }
+              .trending-scroll::-webkit-scrollbar-thumb {
+                background-color: ${isDarkTheme ? '#5f6368' : '#dadce0'};
+                border-radius: 3px;
+              }
+              .trending-scroll::-webkit-scrollbar-thumb:hover {
+                background-color: ${isDarkTheme ? '#70757a' : '#bdc1c6'};
+              }
+            `}</style>
+            <div className="trending-scroll">
+              {TRENDING_SEARCHES.map((search, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setQuery(search);
+                    handleSearch();
+                  }}
+                  className={`w-full flex items-center gap-3 px-2 py-3 text-left transition-all duration-200 cursor-pointer transform hover:scale-[1.01] ${
+                    isDarkTheme
+                      ? 'hover:bg-[#303134] active:bg-[#3c4043]'
+                      : 'hover:bg-gray-50 active:bg-gray-100'
+                  } ${
+                    index < TRENDING_SEARCHES.length - 1 
+                      ? `border-b ${isDarkTheme ? 'border-[#3c4043]' : 'border-[#e8eaed]'}`
+                      : ''
+                  }`}
+                  style={{
+                    animation: `fadeInUp 0.3s ease-out ${index * 0.05}s both`
+                  }}
+                >
+                  <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
+                    isDarkTheme ? 'text-[#9aa0a6]' : 'text-[#5f6368]'
+                  }`} fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                  </svg>
+                  <span className={`text-sm transition-colors duration-200 ${
+                    isDarkTheme ? 'text-white' : 'text-[#202124]'
+                  }`}>{search}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className={`w-full text-[14px] mt-auto ${
+      <footer className={`w-full text-[14px] mt-auto transition-colors duration-500 ease-in-out ${
         isDarkTheme 
           ? 'bg-[#171717] text-[#bdc1c6]' 
           : 'bg-[#f2f2f2] text-[#70757a]'
@@ -489,6 +622,7 @@ const SearchPage: React.FC = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 

@@ -103,7 +103,8 @@ class FirestoreService {
             status: data.status,
             createdAt: data.createdAt?.toMillis() || Date.now(),
             totalSearches: data.totalSearches || 0,
-            lastActive: data.lastActive?.toMillis()
+            lastActive: data.lastActive?.toMillis(),
+            isLocked: data.isLocked || false
           };
         });
         callback(performers);
@@ -403,7 +404,8 @@ class FirestoreService {
           status: data.status,
           createdAt: data.createdAt?.toMillis() || Date.now(),
           totalSearches: data.totalSearches || 0,
-          lastActive: data.lastActive?.toMillis()
+          lastActive: data.lastActive?.toMillis(),
+          isLocked: data.isLocked || false
         };
       }
       return null;
@@ -564,6 +566,30 @@ class FirestoreService {
     } catch (error) {
       console.error('Error updating user performer ID:', error);
       throw error;
+    }
+  }
+
+  // Toggle lock status for a performer
+  async toggleLockStatus(performerId: string, isLocked: boolean): Promise<void> {
+    try {
+      const performerRef = doc(db, 'performers', performerId);
+      await updateDoc(performerRef, {
+        isLocked: isLocked
+      });
+    } catch (error) {
+      console.error('Error toggling lock status:', error);
+      throw error;
+    }
+  }
+
+  // Get lock status for a performer
+  async getLockStatus(performerId: string): Promise<boolean> {
+    try {
+      const performer = await this.getPerformer(performerId);
+      return performer?.isLocked || false;
+    } catch (error) {
+      console.error('Error getting lock status:', error);
+      return false;
     }
   }
 }

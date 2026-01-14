@@ -44,8 +44,15 @@ service cloud.firestore {
       allow read: if isAuthenticated() && 
                      (isAdmin() || performerId == getUserPerformerId());
       
-      // Only admins can update or delete
-      allow update, delete: if isAdmin();
+      // Performers can update only the isLocked field of their own performer document
+      // Admins can update any field
+      allow update: if isAuthenticated() && 
+                      (isAdmin() || 
+                       (performerId == getUserPerformerId() && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isLocked'])));
+      
+      // Only admins can delete
+      allow delete: if isAdmin();
     }
 
     // Users collection

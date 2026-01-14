@@ -51,9 +51,9 @@ export const Navbar: React.FC = () => {
       <nav className="bg-black/95 backdrop-blur-md border-b border-zinc-900 text-white px-6 md:px-10 h-auto min-h-[80px] py-3 flex justify-between items-center sticky top-0 z-[1000]">
         <div className="flex items-center gap-3">
           <Link to="/" onClick={closeMenu} className="flex items-center gap-4 group">
-            <div className="w-7 h-7 bg-white rounded-md flex items-center justify-center font-black text-black text-[12px] transition-transform group-hover:scale-105">R</div>
+            <div className="w-7 h-7 bg-white rounded-md flex items-center justify-center font-black text-black text-[12px] transition-transform group-hover:scale-105">G</div>
             <div className="flex flex-col">
-              <span className="font-bold text-base tracking-tighter uppercase">Reveal <span className="text-zinc-700">System</span></span>
+              <span className="font-bold text-base tracking-tighter uppercase">Googly</span>
               {user && (
                 <span className="text-[9px] font-mono text-zinc-600 mt-0.5">{user.email}</span>
               )}

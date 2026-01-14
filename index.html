@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)">
     <meta name="description" content="A professional tool for magicians and mentalists to secretly capture spectator search queries in real-time using a clean, deceptive search interface.">
@@ -15,8 +15,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Product+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            overscroll-behavior: none;
+            overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+        }
         body {
             font-family: 'Roboto', sans-serif;
+        }
+        #root {
+            overscroll-behavior: none;
+            overscroll-behavior-y: none;
         }
         .google-font {
             font-family: 'Product Sans', 'Roboto', sans-serif;

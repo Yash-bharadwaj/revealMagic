@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
-import { SearchEvent } from '../types';
+import { Toast } from '../components/Toast';
+import { SearchEvent, Performer } from '../types';
 import { firestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { getFCMToken } from '../firebase/config';
@@ -42,6 +43,13 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [linkCopied, setLinkCopied] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLocked, setIsLocked] = useState(false);
+  const [isLockLoading, setIsLockLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+    message: '',
+    type: 'info',
+    isVisible: false
+  });
   const itemsPerPage = 10;
 
   // Use URL performerId if available, otherwise fall back to user's performerId
@@ -85,7 +93,22 @@ const Dashboard: React.FC = () => {
       setIsLoading(false);
     });
 
-    // Subscribe to real-time updates
+    // Load lock status
+    firestoreService.getLockStatus(performerId).then((locked) => {
+      setIsLocked(locked);
+    }).catch((error) => {
+      console.error('Error loading lock status:', error);
+    });
+
+    // Subscribe to real-time performer updates for lock status
+    const unsubscribePerformer = firestoreService.subscribePerformers((performers) => {
+      const currentPerformer = performers.find(p => p.id === performerId);
+      if (currentPerformer) {
+        setIsLocked(currentPerformer.isLocked || false);
+      }
+    });
+
+    // Subscribe to real-time search updates
     const unsubscribe = firestoreService.subscribe(performerId, async (newEvent) => {
       setEvents(prev => {
         // Allow duplicates - just add new event at the beginning
@@ -108,7 +131,10 @@ const Dashboard: React.FC = () => {
       setIsNotificationsEnabled(Notification.permission === 'granted');
     }
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      unsubscribePerformer();
+    };
   }, [performerId]);
 
   const toggleNotifications = async () => {
@@ -163,6 +189,34 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const toggleLock = async () => {
+    if (!performerId || isLockLoading) return;
+    
+    const newLockStatus = !isLocked;
+    setIsLockLoading(true);
+    
+    try {
+      await firestoreService.toggleLockStatus(performerId, newLockStatus);
+      setIsLocked(newLockStatus);
+      setToast({
+        message: newLockStatus ? 'Link locked successfully' : 'Link unlocked successfully',
+        type: 'success',
+        isVisible: true
+      });
+    } catch (error) {
+      console.error('Error toggling lock status:', error);
+      setToast({
+        message: 'Failed to update lock status. Please try again.',
+        type: 'error',
+        isVisible: true
+      });
+      // Revert the state on error
+      setIsLocked(!newLockStatus);
+    } finally {
+      setIsLockLoading(false);
+    }
+  };
+
   if (!performerId && user?.role !== 'admin') {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -208,7 +262,7 @@ const Dashboard: React.FC = () => {
         {/* Compact Header - Responsive */}
         <header className="mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight">Googly</h1>
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight">Peak</h1>
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="bg-zinc-950 border border-zinc-800 px-2 sm:px-3 py-1.5 rounded flex items-center gap-2 min-w-0">
@@ -217,8 +271,10 @@ const Dashboard: React.FC = () => {
                   href={searchLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-[10px] sm:text-xs font-mono text-zinc-300 hover:text-emerald-400 flex-1 truncate min-w-0 underline decoration-zinc-700 hover:decoration-emerald-400 transition-colors"
-                  title="Open search page"
+                  className={`text-[10px] sm:text-xs font-mono flex-1 truncate min-w-0 underline decoration-zinc-700 hover:decoration-emerald-400 transition-colors ${
+                    isLocked ? 'text-zinc-600 line-through' : 'text-zinc-300 hover:text-emerald-400'
+                  }`}
+                  title={isLocked ? "Link is locked" : "Open search page"}
                 >
                   {searchLink}
                 </a>
@@ -235,6 +291,38 @@ const Dashboard: React.FC = () => {
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                     </svg>
+                  )}
+                </button>
+              </div>
+              
+              {/* Lock Link Toggle */}
+              <div className="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-2 sm:gap-1.5" title="Lock/unlock search link">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">Lock Link</span>
+                <button
+                  onClick={toggleLock}
+                  disabled={isLockLoading}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-black flex-shrink-0 ${
+                    isLocked 
+                      ? 'bg-rose-500' 
+                      : 'bg-zinc-700'
+                  } ${isLockLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  role="switch"
+                  aria-checked={isLocked}
+                  aria-label="Toggle link lock"
+                >
+                  {isLockLoading ? (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </span>
+                  ) : (
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        isLocked ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
                   )}
                 </button>
               </div>
@@ -350,10 +438,17 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
+        {/* Toast Notification */}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+        />
 
         <footer className="mt-16 text-center py-10">
            <div className="h-px w-10 bg-zinc-800 mx-auto mb-6"></div>
-           <p className="text-[9px] text-zinc-700 font-black uppercase tracking-[0.5em]">Reveal Technology • v2.0.4</p>
+           <p className="text-[9px] text-zinc-700 font-black uppercase tracking-[0.5em]">Googly • v2.0.4</p>
         </footer>
       </main>
     </div>

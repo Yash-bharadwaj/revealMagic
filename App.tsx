@@ -15,14 +15,7 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <Suspense fallback={
-          <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="w-12 h-12 bg-indigo-600 rounded-lg mb-4"></div>
-              <p className="text-slate-500 font-medium">Initializing Reveal...</p>
-            </div>
-          </div>
-        }>
+        <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />

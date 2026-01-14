@@ -16,6 +16,7 @@ export interface Performer {
   createdAt: number;
   totalSearches: number;
   lastActive?: number;
+  isLocked?: boolean;
 }
 
 export interface User {
