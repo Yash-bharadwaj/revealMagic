@@ -206,16 +206,16 @@ const SearchPage: React.FC = () => {
           </div>
 
           {/* Buttons Area */}
-          <div className="mt-6 sm:mt-[29px] flex flex-col sm:flex-row justify-center gap-3 px-4 sm:px-0">
+          <div className="mt-6 sm:mt-[29px] flex flex-row justify-center gap-3">
             <button 
               type="submit"
-              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[140px] sm:min-w-[126px] touch-manipulation"
+              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] touch-manipulation"
             >
               Google Search
             </button>
             <button 
               type="button"
-              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[140px] sm:min-w-[126px] touch-manipulation"
+              className="px-4 py-2.5 sm:py-2 bg-[#f8f9fa] active:bg-[#f1f3f4] border border-[#f8f9fa] active:border-[#dadce0] active:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] touch-manipulation"
             >
               I'm Feeling Lucky
             </button>
