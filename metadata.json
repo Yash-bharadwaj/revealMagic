@@ -1,0 +1,8 @@
+{
+  "name": "Reveal - Magician's Real-Time Search Tool",
+  "description": "A professional tool for magicians and mentalists to secretly capture spectator search queries in real-time using a clean, deceptive search interface.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
