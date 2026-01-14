@@ -208,7 +208,7 @@ const Dashboard: React.FC = () => {
         {/* Compact Header - Responsive */}
         <header className="mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight">Peak</h1>
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight">Googly</h1>
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="bg-zinc-950 border border-zinc-800 px-2 sm:px-3 py-1.5 rounded flex items-center gap-2 min-w-0">
