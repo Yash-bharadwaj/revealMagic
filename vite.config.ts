@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
           strategies: 'injectManifest',
           srcDir: 'public',
           filename: 'sw.js',
-          includeAssets: ['icon-192x192.png', 'icon-512x512.png'],
+          includeAssets: ['icon-32x32.png', 'icon-192x192.png', 'icon-512x512.png'],
           manifest: {
             name: "Googly - Magician's Real-Time Search Tool",
             short_name: "Googly",

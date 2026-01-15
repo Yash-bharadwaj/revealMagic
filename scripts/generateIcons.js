@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Generate icons from app_Icon.PNG
-const sizes = [192, 512];
+const sizes = [32, 192, 512];
 const publicDir = path.join(__dirname, '..', 'public');
 const sourceImagePath = path.join(publicDir, 'app_Icon.PNG');
 
