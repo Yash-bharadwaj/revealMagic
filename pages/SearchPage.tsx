@@ -86,9 +86,14 @@ const SearchPage: React.FC = () => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) return;
 
-    // Check if link is locked
+    // If link is locked, redirect to real Google
     if (isLocked) {
-      alert('This search link is currently locked. Please contact the performer.');
+      const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(trimmedQuery)}`;
+      try {
+        window.top!.location.replace(googleUrl);
+      } catch (err) {
+        window.location.replace(googleUrl);
+      }
       return;
     }
 
@@ -206,7 +211,7 @@ const SearchPage: React.FC = () => {
             </a>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button className="p-2 cursor-pointer relative" aria-label="Notifications" onClick={(e) => e.preventDefault()}>
             <svg className={`w-5 h-5 ${isDarkTheme ? 'text-white' : 'text-[#5f6368]'}`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
@@ -220,33 +225,27 @@ const SearchPage: React.FC = () => {
               <path d="M6,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,8,6,8z M12,20c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,20,12,20z M6,20 c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,20,6,20z M6,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S4.9,14,6,14z M12,14c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S10.9,14,12,14z M18,14c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S16.9,14,18,14z M18,8c1.1,0,2-0.9,2-2 s-0.9-2-2-2s-2,0.9-2,2S16.9,8,18,8z M12,8c1.1,0,2-0.9,2-2s-0.9-2-2-2s-2,0.9-2,2S10.9,8,12,8z M18,20c1.1,0,2-0.9,2-2s-0.9-2-2-2 s-2,0.9-2,2S16.9,20,18,20z"></path>
             </svg>
           </button>
-          <div className="w-8 h-8 rounded-full bg-[#4285F4] flex items-center justify-center text-white text-sm font-medium cursor-pointer">
-            A
-          </div>
+          <button 
+            className={`bg-[#1a73e8] hover:bg-[#1557b0] text-white px-3 py-1.5 rounded-[4px] font-medium hover:shadow-[0_1px_3px_1px_rgba(66,64,67,0.15),0_1px_2px_0_rgba(60,64,67,0.3)] transition-all text-xs cursor-pointer whitespace-nowrap rounded-full`}
+            onClick={(e) => e.preventDefault()}
+          >
+            Sign in
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center pt-12 sm:pt-[120px] pb-8 px-4">
-        {/* Locked Message */}
-        {isLocked && (
-          <div className="mb-4 w-full max-w-[584px] bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top duration-300">
-            <svg className="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
-            <p className="text-sm text-yellow-800">This search link is currently locked and cannot accept searches.</p>
-          </div>
-        )}
         {/* Google Logo */}
         <div className="mb-6 sm:mb-10">
-          <div className="text-[50px] sm:text-[92px] font-normal tracking-[-0.02em] google-font leading-none">
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#4285F4]'}`}>G</span>
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#EA4335]'}`}>o</span>
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#FBBC05]'}`}>o</span>
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#4285F4]'}`}>g</span>
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#34A853]'}`}>l</span>
-            <span className={`transition-colors duration-500 ease-in-out ${isDarkTheme ? 'text-white' : 'text-[#EA4335]'}`}>e</span>
-          </div>
+          <img 
+            src="/GooogleLogo.png" 
+            alt="Google" 
+            className="h-[50px] sm:h-[92px] w-auto transition-opacity duration-500 ease-in-out"
+            style={{
+              filter: isDarkTheme ? 'brightness(0) invert(1)' : 'none'
+            }}
+          />
         </div>
 
         {/* Search Bar */}
@@ -300,11 +299,11 @@ const SearchPage: React.FC = () => {
                 }
               }}
               onBlur={() => setIsFocused(false)}
-              disabled={isLocked}
               enterKeyHint="search"
-              className={`flex-1 min-w-0 focus:outline-none text-[16px] h-full bg-transparent placeholder:text-[#9aa0a6] transition-colors duration-500 ease-in-out ${
-                isDarkTheme ? 'text-white' : 'text-[#202124]'
-              } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className="flex-1 min-w-0 focus:outline-none text-[16px] h-full bg-transparent placeholder:text-[#9aa0a6] transition-colors duration-500 ease-in-out"
+              style={{
+                color: isDarkTheme ? '#ffffff' : '#202124'
+              }}
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
@@ -399,10 +398,7 @@ const SearchPage: React.FC = () => {
           <div className="hidden sm:flex mt-7 flex-row justify-center gap-3">
             <button 
               type="submit"
-              disabled={isLocked}
-              className={`px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] ${
-                isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+              className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] hover:shadow-[0_1px_1px_rgba(0,0,0,0.1)] rounded-[4px] text-sm text-[#3c4043] transition-all min-w-[120px] sm:min-w-[126px] cursor-pointer"
             >
               Google Search
             </button>
