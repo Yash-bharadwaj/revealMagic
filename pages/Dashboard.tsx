@@ -63,18 +63,8 @@ const Dashboard: React.FC = () => {
     }
   }, [user, navigate]);
 
-  // Verify performer route access
-  useEffect(() => {
-    if (user && user.role === 'performer' && urlPerformerId) {
-      // If performer tries to access a different performer's route, redirect to their own
-      if (user.performerId && urlPerformerId !== user.performerId) {
-        navigate(`/${user.performerId}`, { replace: true });
-      }
-    } else if (user && user.role === 'performer' && !urlPerformerId && user.performerId) {
-      // If performer accesses /dashboard, redirect to their performer route
-      navigate(`/${user.performerId}`, { replace: true });
-    }
-  }, [user, urlPerformerId, navigate]);
+  // Dashboard is now only accessible via /dashboard route
+  // The /:performerId route is now for SearchPage (public)
 
   useEffect(() => {
     if (!performerId) {
@@ -143,42 +133,109 @@ const Dashboard: React.FC = () => {
     if ('Notification' in window) {
       if (!isNotificationsEnabled) {
         // Enable notifications
-        const permission = await Notification.requestPermission();
-        const enabled = permission === 'granted';
-        setIsNotificationsEnabled(enabled);
+        try {
+          const permission = await Notification.requestPermission();
+          const enabled = permission === 'granted';
+          setIsNotificationsEnabled(enabled);
 
-        if (enabled) {
-          // Get FCM token and save to Firestore
-          try {
-            const token = await getFCMToken();
-            if (token && user?.id) {
-              console.log('FCM token obtained, saving to Firestore...', token.substring(0, 20) + '...');
-              await firestoreService.updateUserFCMToken(user.id, token);
-              console.log('FCM token saved successfully');
-            } else {
-              console.warn('FCM token not obtained or user ID missing', { token: token ? 'exists' : 'missing', userId: user?.id });
+          if (enabled) {
+            // Get FCM token and save to Firestore
+            try {
+              const token = await getFCMToken();
+              if (token && user?.id) {
+                console.log('FCM token obtained, saving to Firestore...', token.substring(0, 20) + '...');
+                await firestoreService.updateUserFCMToken(user.id, token);
+                console.log('FCM token saved successfully');
+                setToast({
+                  message: 'Push alerts enabled successfully',
+                  type: 'success',
+                  isVisible: true
+                });
+              } else {
+                console.warn('FCM token not obtained or user ID missing', { token: token ? 'exists' : 'missing', userId: user?.id });
+                setToast({
+                  message: 'Failed to enable push alerts. Please try again.',
+                  type: 'error',
+                  isVisible: true
+                });
+              }
+            } catch (error) {
+              console.error('Error getting FCM token:', error);
+              setToast({
+                message: 'Failed to enable push alerts. Please try again.',
+                type: 'error',
+                isVisible: true
+              });
             }
-          } catch (error) {
-            console.error('Error getting FCM token:', error);
+          } else if (permission === 'denied') {
+            setToast({
+              message: 'Notifications blocked. Enable in browser settings.',
+              type: 'error',
+              isVisible: true
+            });
+          } else {
+            setToast({
+              message: 'Push alerts permission not granted',
+              type: 'info',
+              isVisible: true
+            });
           }
+        } catch (error) {
+          console.error('Error requesting notification permission:', error);
+          setToast({
+            message: 'Failed to enable push alerts. Please try again.',
+            type: 'error',
+            isVisible: true
+          });
         }
       } else {
         // Disable notifications
-        setIsNotificationsEnabled(false);
-        // Optionally remove FCM token from Firestore
-        if (user?.id) {
-          try {
-            await firestoreService.updateUserFCMToken(user.id, '');
-          } catch (error) {
-            console.error('Error removing FCM token:', error);
+        try {
+          setIsNotificationsEnabled(false);
+          // Optionally remove FCM token from Firestore
+          if (user?.id) {
+            try {
+              await firestoreService.updateUserFCMToken(user.id, '');
+              setToast({
+                message: 'Push alerts disabled',
+                type: 'error',
+                isVisible: true
+              });
+            } catch (error) {
+              console.error('Error removing FCM token:', error);
+              setToast({
+                message: 'Failed to disable push alerts. Please try again.',
+                type: 'error',
+                isVisible: true
+              });
+            }
+          } else {
+            setToast({
+              message: 'Push alerts disabled',
+              type: 'error',
+              isVisible: true
+            });
           }
+        } catch (error) {
+          console.error('Error disabling notifications:', error);
+          setToast({
+            message: 'Failed to disable push alerts. Please try again.',
+            type: 'error',
+            isVisible: true
+          });
         }
       }
+    } else {
+      setToast({
+        message: 'Push notifications are not supported in this browser',
+        type: 'error',
+        isVisible: true
+      });
     }
   };
 
   const searchLink = performerId 
-    ? `${window.location.origin}/#/search/${performerId}`
+    ? `${window.location.origin}/${performerId}`
     : '';
 
   const copyLink = () => {

@@ -38,5 +38,5 @@ export enum AppRoute {
   LOGIN = '/login',
   DASHBOARD = '/dashboard',
   ADMIN = '/admin',
-  SEARCH = '/search/:performerId'
+  SEARCH = '/:performerId'
 }

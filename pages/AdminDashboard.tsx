@@ -193,7 +193,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const copyLink = (performerId: string) => {
-    const link = `${window.location.origin}/#/search/${performerId}`;
+    const link = `${window.location.origin}/${performerId}`;
     navigator.clipboard.writeText(link);
     setCopiedLinkId(performerId);
     showToast('Link copied to clipboard', 'success');
@@ -294,7 +294,7 @@ const AdminDashboard: React.FC = () => {
                       <td className="px-4 sm:px-6 py-4">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-xs text-zinc-400 font-mono truncate flex-1 min-w-0">
-                            {window.location.origin}/#/search/{p.id}
+                            {window.location.origin}/{p.id}
                           </span>
                           <button
                             onClick={() => copyLink(p.id)}

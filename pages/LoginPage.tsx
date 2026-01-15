@@ -17,9 +17,8 @@ const LoginPage: React.FC = () => {
       // Redirect based on role
       if (user.role === 'admin') {
         navigate('/admin', { replace: true });
-      } else if (user.role === 'performer' && user.performerId) {
-        navigate(`/${user.performerId}`, { replace: true });
       } else {
+        // All performers go to /dashboard (not /:performerId which is public search page)
         navigate('/dashboard', { replace: true });
       }
     }
