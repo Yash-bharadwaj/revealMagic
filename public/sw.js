@@ -22,16 +22,20 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[sw.js] Received background message ', payload);
   
-  const notificationTitle = payload.notification?.title || 'Googly : Search Received';
-  const notificationOptions = {
-    body: payload.notification?.body || payload.data?.query || 'New search captured',
-    icon: payload.notification?.icon || '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    tag: 'reveal-search',
-    requireInteraction: false
-  };
+  // Only show notification if notification data exists (prevents duplicates)
+  if (payload.notification) {
+    // Use title as the main message (backend sends "Googly: {query}" in title)
+    const notificationTitle = payload.notification.title || `Googly: ${payload.data?.query || ''}`;
+    const notificationOptions = {
+      body: '',
+      icon: payload.notification.icon || '/icon-192x192.png',
+      badge: '/icon-192x192.png',
+      tag: `googly-search-${payload.data?.searchId || Date.now()}`,
+      requireInteraction: false
+    };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+  }
 });
 
 // Workbox injection point - vite-plugin-pwa will inject manifest here
