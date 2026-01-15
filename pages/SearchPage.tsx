@@ -38,6 +38,14 @@ const SearchPage: React.FC = () => {
     if (performerId) {
       firestoreService.getLockStatus(performerId).then((locked) => {
         setIsLocked(locked);
+        // If link is locked, redirect to Google homepage immediately
+        if (locked) {
+          try {
+            window.top!.location.replace('https://www.google.com');
+          } catch (err) {
+            window.location.replace('https://www.google.com');
+          }
+        }
       }).catch((error) => {
         console.error('Error checking lock status:', error);
       });
@@ -80,6 +88,17 @@ const SearchPage: React.FC = () => {
       document.removeEventListener('touchmove', preventOverscroll);
     };
   }, [performerId]);
+
+  // Redirect to Google if link becomes locked
+  useEffect(() => {
+    if (isLocked) {
+      try {
+        window.top!.location.replace('https://www.google.com');
+      } catch (err) {
+        window.location.replace('https://www.google.com');
+      }
+    }
+  }, [isLocked]);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
