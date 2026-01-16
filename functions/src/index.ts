@@ -181,8 +181,8 @@ export const onSearchCreated = functions.firestore
       // Prepare notification message
       const message = {
         notification: {
-          title: `Googly: ${query}`,
-          body: ''
+          title: query,
+          body: 'received from Googly'
         },
         data: {
           query: query,

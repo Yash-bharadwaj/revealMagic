@@ -14,23 +14,59 @@ export const setupForegroundNotifications = async () => {
     onMessage(messaging, (payload) => {
       console.log('Message received in foreground:', payload);
       
-      // Show notification only if we have notification data
-      // Use tag to prevent duplicates - same tag will replace previous notification
-      if (Notification.permission === 'granted' && payload.notification) {
-        // Use title as the main message (backend sends "Googly: {query}" in title)
-        const notificationTitle = payload.notification.title || `Googly: ${payload.data?.query || ''}`;
-        const notificationOptions = {
-          body: '',
-          icon: payload.notification.icon || '/icon-192x192.png',
-          badge: '/icon-192x192.png',
-          tag: `googly-search-${payload.data?.searchId || Date.now()}`,
-          requireInteraction: false
-        };
-
-        new Notification(notificationTitle, notificationOptions);
+      // Always show notification when message is received, regardless of app state
+      // Check if we have notification data or data payload
+      if (payload.notification || payload.data?.query) {
+        showNotification(payload);
       }
     });
   } catch (error) {
     console.error('Error setting up foreground notifications:', error);
+  }
+};
+
+// Helper function to show notification
+const showNotification = (payload: any) => {
+  // Check notification permission
+  if (Notification.permission === 'default') {
+    // Request permission if not set
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        displayNotification(payload);
+      } else {
+        console.warn('Notification permission denied');
+      }
+    });
+  } else if (Notification.permission === 'granted') {
+    // Show notification immediately if permission is granted
+    displayNotification(payload);
+  } else {
+    console.warn('Notification permission denied by user');
+  }
+};
+
+// Display the actual notification
+const displayNotification = (payload: any) => {
+  const notificationTitle = payload.notification?.title || payload.data?.query || '';
+  const notificationBody = payload.notification?.body || 'received from Googly';
+  const notificationOptions = {
+    body: notificationBody,
+    icon: payload.notification?.icon || '/icon-192x192.png',
+    badge: '/icon-192x192.png',
+    tag: `googly-search-${payload.data?.searchId || Date.now()}`,
+    requireInteraction: false,
+    silent: false
+  };
+
+  try {
+    const notification = new Notification(notificationTitle, notificationOptions);
+    
+    // Optional: Handle notification click
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  } catch (error) {
+    console.error('Error showing notification:', error);
   }
 };

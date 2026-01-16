@@ -24,10 +24,10 @@ messaging.onBackgroundMessage((payload) => {
   
   // Only show notification if notification data exists (prevents duplicates)
   if (payload.notification) {
-    // Use title as the main message (backend sends "Googly: {query}" in title)
-    const notificationTitle = payload.notification.title || `Googly: ${payload.data?.query || ''}`;
+    const notificationTitle = payload.notification.title || payload.data?.query || '';
+    const notificationBody = payload.notification.body || 'received from Googly';
     const notificationOptions = {
-      body: '',
+      body: notificationBody,
       icon: payload.notification.icon || '/icon-192x192.png',
       badge: '/icon-192x192.png',
       tag: `googly-search-${payload.data?.searchId || Date.now()}`,
