@@ -38,6 +38,18 @@ const AdminDashboard: React.FC = () => {
     type: 'info'
   });
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
+  const [successDialog, setSuccessDialog] = useState<{ 
+    isOpen: boolean; 
+    performerName: string; 
+    email: string; 
+    password: string;
+  }>({
+    isOpen: false,
+    performerName: '',
+    email: '',
+    password: ''
+  });
+  const [messageCopied, setMessageCopied] = useState(false);
 
   useEffect(() => {
     setIsLoading(false);
@@ -102,10 +114,22 @@ const AdminDashboard: React.FC = () => {
         createdPerformer.id
       );
 
+      // Store performer details for success dialog
+      const performerName = newPerformer.name;
+      const performerEmail = newPerformer.email;
+      const performerPassword = newPerformer.password;
+      
       setNewPerformer({ name: '', username: '', email: '', password: '', customId: '' });
       setShowAddModal(false);
       await loadUsers(); // Reload users to update the display
-      showToast('Performer and user account created successfully!', 'success');
+      
+      // Show success dialog with installation instructions
+      setSuccessDialog({
+        isOpen: true,
+        performerName: performerName,
+        email: performerEmail,
+        password: performerPassword
+      });
     } catch (error: any) {
       console.error('Error adding performer:', error);
       console.error('Error details:', {
@@ -480,6 +504,123 @@ const AdminDashboard: React.FC = () => {
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
       />
+
+      {/* Success Dialog with Installation Instructions */}
+      {successDialog.isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[300] flex items-start sm:items-center justify-center p-0 sm:p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setSuccessDialog({ ...successDialog, isOpen: false });
+            }
+          }}
+        >
+          <div className="bg-black border border-zinc-800 w-full sm:w-auto sm:max-w-[600px] rounded-none sm:rounded-xl shadow-2xl min-h-full sm:min-h-0 my-0 sm:my-auto">
+            <div className="sticky top-0 bg-black border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-bold text-white">✅ {successDialog.performerName}</h2>
+              <button
+                onClick={() => setSuccessDialog({ ...successDialog, isOpen: false })}
+                className="text-zinc-500 hover:text-white transition-colors p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="bg-zinc-950/50 border border-zinc-800 rounded-lg p-4 space-y-4">
+                <div className="text-center">
+                  <p className="text-sm font-bold text-rose-500 mb-2">🚨 *IMPORTANT — Login after adding to Home Screen* 🚨</p>
+                  <p className="text-sm text-white">
+                    Welcome <span className="font-bold">{successDialog.performerName}</span>! Thank you for purchasing Googly — get ready to blow minds with this amazing tool!
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-bold text-zinc-400 mb-2">*Android installation*</p>
+                    <ol className="text-xs text-zinc-300 space-y-1 ml-4 list-decimal">
+                      <li>Open this link in Chrome: <span className="text-white font-mono">{window.location.origin}/login</span></li>
+                      <li>Tap the 3 dots (top-right) → Add to Home Screen</li>
+                      <li>Tap Install, wait a few seconds, the app will appear on your home screen.</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold text-zinc-400 mb-2">*iPhone installation*</p>
+                    <ol className="text-xs text-zinc-300 space-y-1 ml-4 list-decimal">
+                      <li>Open Safari and go to: <span className="text-white font-mono">{window.location.origin}/login</span></li>
+                      <li>Tap the Share icon</li>
+                      <li>Scroll → Add to Home Screen</li>
+                    </ol>
+                  </div>
+
+                  <div className="pt-2 border-t border-zinc-800">
+                    <p className="text-xs font-bold text-zinc-400 mb-2">Login Credentials</p>
+                    <div className="space-y-1 text-xs text-zinc-300">
+                      <p><span className="text-zinc-500">Login ID:</span> <span className="text-white font-mono">{successDialog.email}</span></p>
+                      <p><span className="text-zinc-500">Password:</span> <span className="text-white font-mono">{successDialog.password}</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    const message = `✅ ${successDialog.performerName}
+
+🚨 *IMPORTANT — Login after adding to Home Screen* 🚨
+
+Welcome ${successDialog.performerName}! Thank you for purchasing Googly — get ready to blow minds with this amazing tool!
+
+*Android installation*
+	1.	Open this link in Chrome: ${window.location.origin}/login
+	2.	Tap the 3 dots (top-right) → Add to Home Screen
+	3.	Tap Install, wait a few seconds, the app will appear on your home screen.
+
+*iPhone installation*
+	1.	Open Safari and go to: ${window.location.origin}/login
+	2.	Tap the Share icon
+	3.	Scroll → Add to Home Screen
+
+Login ID: ${successDialog.email}
+Password: ${successDialog.password}`;
+                    
+                    navigator.clipboard.writeText(message);
+                    setMessageCopied(true);
+                    setTimeout(() => setMessageCopied(false), 2000);
+                  }}
+                  className="w-full h-11 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2"
+                >
+                  {messageCopied ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                      </svg>
+                      <span>Copy Message</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setSuccessDialog({ ...successDialog, isOpen: false })}
+                  className="w-full h-11 bg-transparent text-zinc-500 hover:text-white text-sm font-medium transition-all border border-zinc-800 rounded-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast Notification */}
       <Toast
