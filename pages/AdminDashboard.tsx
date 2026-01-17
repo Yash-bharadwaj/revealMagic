@@ -251,7 +251,7 @@ const AdminDashboard: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
         <header className="flex items-center justify-between gap-4 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Googly</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Googly ({performers.length})</h1>
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setShowAddModal(true)}
@@ -280,6 +280,7 @@ const AdminDashboard: React.FC = () => {
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
                 <tr className="border-b border-zinc-900">
+                  <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">SNo</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Name</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">Email</th>
                   <th className="px-4 sm:px-6 py-3 text-xs font-bold text-zinc-500 uppercase">ID</th>
@@ -288,10 +289,13 @@ const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-900">
-                {performers.map((p) => {
+                {performers.map((p, index) => {
                   const linkedUser = users.find(u => u.performerId === p.id);
                   return (
                     <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-4 sm:px-6 py-4">
+                        <span className="text-xs font-bold text-zinc-500">{index + 1}</span>
+                      </td>
                       <td className="px-4 sm:px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-md bg-white flex items-center justify-center text-xs font-black text-black flex-shrink-0">
@@ -356,7 +360,7 @@ const AdminDashboard: React.FC = () => {
                 })}
                 {performers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 sm:px-6 py-16 text-center text-sm text-zinc-500">
+                    <td colSpan={6} className="px-4 sm:px-6 py-16 text-center text-sm text-zinc-500">
                       No performers found
                     </td>
                   </tr>
